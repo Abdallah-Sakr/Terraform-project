@@ -1,0 +1,27 @@
+resource "aws_instance" "web_server1" {
+  ami           = var.ami_id
+  instance_type = var.instance_type
+  key_name      = var.key_name
+  subnet_id     = element(var.subnet_ids, 0)
+  security_groups = [var.security_group_id]
+
+  tags = {
+    Name = var.name
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "sudo apt update -y",
+      "sudo apt install apache2 -y",
+      "sudo systemctl start apache2",
+      "sudo systemctl enable apache2"
+    ]
+
+    connection {
+      type        = "ssh"
+      user        = var.ssh_user
+      private_key = file(var.private_key_path)
+      host        = self.public_ip
+    }
+  }
+}
