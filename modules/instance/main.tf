@@ -1,4 +1,3 @@
-
 resource "aws_instance" "web_server" {
   ami             = var.ami_id
   instance_type   = var.instance_type
@@ -12,29 +11,22 @@ resource "aws_instance" "web_server" {
 
   provisioner "remote-exec" {
     inline = [
-      "sudo apt update -y >> /tmp/provisioner.log 2>&1",
-
-      "sudo apt install httpd -y >> /tmp/provisioner.log 2>&1",
-
-      "echo '<!DOCTYPE html><html><head><title>My Web Page</title></head><body><h1>Welcome to My Web Page</h1><p>This is a sample web page served by Apache.</p></body></html>' > /var/www/html/index.html >> /tmp/provisioner.log 2>&1",
-
-      "sudo systemctl start httpd >> /tmp/provisioner.log 2>&1",
-
-      "sudo systemctl enable httpd >> /tmp/provisioner.log 2>&1",
-
+      "sudo yum update -y",
+      "sudo yum install httpd -y",
+      "echo '<!DOCTYPE html><html><head><title>My Web Page</title></head><body><h1>Welcome to My Web Page</h1><p>This is a sample web page served by Apache.</p></body></html>' | sudo tee /var/www/html/index.html",
+      "sudo systemctl start httpd",
+      "sudo systemctl enable httpd"
     ]
 
     connection {
       type        = "ssh"
       user        = var.ssh_user
       private_key = file(var.private_key_path)
-      host        = self.public_ip
-      timeout     = "5m"
-    }
-  }
+      host        = self.public_ip }
+
 }
-
-
+ }
+  } 
 resource "aws_instance" "web_server2" {
   ami             = var.ami_id
   instance_type   = var.instance_type
@@ -48,24 +40,19 @@ resource "aws_instance" "web_server2" {
 
   provisioner "remote-exec" {
     inline = [
-      "sudo apt update -y >> /tmp/provisioner.log 2>&1",
-
-      "sudo apt install httpd -y >> /tmp/provisioner.log 2>&1",
-
-      "echo '<!DOCTYPE html><html><head><title>My Web Page</title></head><body><h1>Welcome to My Web Page</h1><p>This is a sample web page served by Apache.</p></body></html>' > /var/www/html/index.html >> /tmp/provisioner.log 2>&1",
-
-      "sudo systemctl start httpd >> /tmp/provisioner.log 2>&1",
-
-      "sudo systemctl enable httpd >> /tmp/provisioner.log 2>&1",
-
+      "sudo yum update -y",
+      "sudo yum install httpd -y",
+      "echo '<!DOCTYPE html><html><head><title>My Web Page</title></head><body><h1>Welcome to My Web Page</h1><p>This is a sample web page served by Apache.</p></body></html>' | sudo tee /var/www/html/index.html",
+      "sudo systemctl start httpd",
+      "sudo systemctl enable httpd"
     ]
 
-    connection {
+connection {
       type        = "ssh"
       user        = var.ssh_user
       private_key = file(var.private_key_path)
       host        = self.public_ip
-      timeout     = "5m"
+      timeout     = "10m"
     }
   }
 }
