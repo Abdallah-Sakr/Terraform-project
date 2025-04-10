@@ -55,7 +55,16 @@ resource "aws_security_group" "private_sg" {
   vpc_id = var.vpc_id
 
   name        = "${var.name}-private-sg"
-  description = "Security group for private resources"
+  description = "Security group for private resources"}
+resource "aws_security_group_rule" "private_mysql" {
+  type        = "ingress"
+  from_port   = 3306
+  to_port     = 3306
+  protocol    = "tcp"
+  cidr_blocks = var.public_subnet_cidrs  # ﺎﻠﺴﻣﺎﺣ ﻒﻘﻃ ﺏﺎﺘﺻﺍﻼﺗ ﻢﻧ ﺎﻠﺸﺒﻛﺎﺗ ﺎﻠﻋﺎﻣﺓ
+  security_group_id = aws_security_group.private_sg.id
+}
+
 
   tags = {
     Name = "${var.name}-private-sg"
