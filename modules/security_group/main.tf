@@ -65,8 +65,8 @@ resource "aws_security_group" "private_sg" {
 # Rule: Allow MySQL (Port 3306) connections from Public Subnets
 resource "aws_security_group_rule" "private_mysql" {
   type        = "ingress"
-  from_port   = 3306
-  to_port     = 3306
+  from_port   = 80
+  to_port     = 80
   protocol    = "tcp"
   cidr_blocks = var.public_subnet_cidrs  # السماح فقط باتصالات من الشبكات العامة
   security_group_id = aws_security_group.private_sg.id
