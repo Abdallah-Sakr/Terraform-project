@@ -1,7 +1,6 @@
 resource "aws_instance" "web_server1" {
   ami             = var.ami_id
   instance_type   = var.instance_type
-  key_name        = var.key_name
   subnet_id       = element(var.subnet_ids, 0)
   security_groups = [var.security_group_id]
 
@@ -9,52 +8,34 @@ resource "aws_instance" "web_server1" {
     Name = var.name
   }
 
-  provisioner "remote-exec" {
-    inline = [
-           "sudo apt update -y >> /tmp/provisioner.log 2>&1",
-      "sudo apt install httpd -y >> /tmp/provisioner.log 2>&1",
-      "sudo systemctl start httpd >> /tmp/provisioner.log 2>&1",
-
-      "sudo systemctl enable httpd >> /tmp/provisioner.log 2>&1",
-
-    ]
-
-    connection {
-      type        = "ssh"
-      user        = var.ssh_user
-      private_key = file(var.private_key_path)
-      host        = self.private_ip
-       timeout     = "5m"
-    }
-  }
+  # ﺎﺴﺘﺧﺩﺎﻣ user_data ﻞﺘﻨﻔﻳﺫ ﺃﻭﺎﻣﺭ ﻊﻧﺩ ﺏﺩﺀ ﺎﻠـ EC2 instance
+  user_data = <<-EOF
+    #!/bin/bash
+    sudo yum update -y
+    sudo yum install httpd -y
+    sudo systemctl start httpd
+    sudo systemctl enable httpd
+    echo '<!DOCTYPE html><html><head><title>My Web Page</title></head><body><h1>Welcome to My Web Page</h1><p>This is a sample web page served by Apache.</p></body></html>' | sudo tee /var/www/html/index.html
+  EOF
 }
 
 resource "aws_instance" "web_server3" {
   ami             = var.ami_id
   instance_type   = var.instance_type
-  key_name        = var.key_name
   subnet_id       = element(var.subnet_ids, 1)
   security_groups = [var.security_group_id]
-
-  tags = {
+tags = {
     Name = var.name
   }
 
-  provisioner "remote-exec" {
-    inline = [
-      "sudo apt update -y",
-      "sudo apt install httpd -y >> /tmp/provisioner.log 2>&1",
-      "sudo systemctl start httpd >> /tmp/provisioner.log 2>&1",
-
-      "sudo systemctl enable httpd >> /tmp/provisioner.log 2>&1",
-    ]
-
-    connection {
-      type        = "ssh"
-      user        = var.ssh_user
-      private_key = file(var.private_key_path)
-      host        = self.private_ip
-       timeout     = "5m"
-    }
-  }
+  # ﺎﺴﺘﺧﺩﺎﻣ user_data ﻞﺘﻨﻔﻳﺫ ﺃﻭﺎﻣﺭ ﻊﻧﺩ ﺏﺩﺀ ﺎﻠـ EC2 instance
+  user_data = <<-EOF
+    #!/bin/bash
+    sudo yum update -y
+    sudo yum install httpd -y
+    sudo systemctl start httpd
+    sudo systemctl enable httpd
+    echo '<!DOCTYPE html><html><head><title>My Web Page</title></head><body><h1>Welcome to My Web Page</h1><p>This is a sample web page served by Apache.</p></body></html>' | sudo tee /var/www/html/index.html
+  EOF
 }
+
